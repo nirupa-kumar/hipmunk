@@ -11,10 +11,14 @@ exports.processUserMessage = function(message, callback) {
 		callback(err, "processUserMessage Error: Empty message string!");
 	}
 	var msgStr = message.toString().toLowerCase();
+	console.log("In processUserMessage: msgStr= " + msgStr);
+
 	var len = allowedSubStrings.length;
 	var i;
 	for(i=0; i<len; i++) {
-		var subStr = allowedSubStrings[i];	
+		var subStr = allowedSubStrings[i];
+		console.log("subStr" + util.inspect(subStr));
+	
 		/* Handle double or more space between words in user messages. 
 		 * Remove all spaces from user message strings and substrings and then process 
 		 */
@@ -24,6 +28,7 @@ exports.processUserMessage = function(message, callback) {
 		if(msgStr.includes(subStr)) {
 			console.log("message includes" + util.inspect(subStr));
 			var location = msgStr.replace(subStr, "");
+			console.log("Location is "+location);
 			if(location && location.length > 0) {
 				location = location.trim();
 				console.log("Location is "+location);

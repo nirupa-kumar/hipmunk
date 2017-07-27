@@ -8,7 +8,6 @@ var bodyParser = require('body-parser');
 var index = require('./routes/index');
 var users = require('./routes/users');
 var chat = require('./routes/chat.js');
-//var geocodeloc = require('./routes/geocodeloc');
 var cors = require('cors');
 
 var app = express();

@@ -8,9 +8,9 @@ var msgProcessor = require('./messageProcessor.js');
 var weather = require('./weather.js');
 var userDb = require('./userDb.js');
 
-var googleMapsClient = require('@google/maps').createClient({
-	  key: 'AIzaSyD7W7v5psM8TDJwUV2WxsPkoYRtByh07Y0'
-	});
+//var googleMapsClient = require('@google/maps').createClient({
+//	  key: 'AIzaSyD7W7v5psM8TDJwUV2WxsPkoYRtByh07Y0'
+//	});
 
 router.get('/', function(req, res) {
 	  res.send("chat!!!!");
@@ -71,7 +71,7 @@ router.post('/messages',function(req,res) {
 					
 					if(err) {
 						res.statusMessage = "Failure in geo location processing";
-						res.status(400).end();
+						res.status(400).send(getErrorMessage());
 					} else {
 						location = mpRes;
 						
@@ -79,19 +79,37 @@ router.post('/messages',function(req,res) {
 						geocodeloc.getLocation(location, function(err, geoRes){
 							if(err) {
 								res.statusMessage = "Failure in geo location processing";
-								res.status(400).end();
+								res.status(400).send(getLocErrorMessage());
 							} else {
 								/*Call the weather API and return the results. 
 								 * For now just returning the location info */
-								var ret = {
-											"messages": [
-											             {
-										            	  "type": "text",
-										            	  "text": JSON.stringify(geoRes)
-											             },
-											            ]
-						                   }
-						    res.send(ret);
+//								var ret = {
+//											"messages": [
+//											             {
+//										            	  "type": "text",
+//										            	  "text": JSON.stringify(geoRes)
+//											             },
+//											            ]
+//						                   };
+								console.log("Location to fetch weather info: "+JSON.stringify(geoRes));
+								var geoLocation = JSON.stringify(geoRes);
+								weather.getCurrentWeather(geoRes.co_ords,function(err,weaRes){
+									if(err) {
+										res.statusMessage = "Failure in current weather processing";
+										res.status(400).send(getWeatherErrorMessage());
+									} else {
+									    console.log(weaRes);
+									    var ret = {
+												   "messages": [
+												                {
+											            	      "type": "text",
+											            	      "text": weaRes
+												                 },
+												               ]
+							                      };
+									    res.send(ret);
+									}
+								});
 							}
 						});
 					}
@@ -104,5 +122,41 @@ router.post('/messages',function(req,res) {
 //	    res.status(400).end();
 	});
 });
+
+function getErrorMessage() {
+	var ret = {
+				"messages": [
+				             {
+			            	  "type": "text",
+			            	  "text": "Sorry, I am not very intelligent. Could not process your message. Can you try again please?"
+				             },
+				            ]
+              };
+	return ret;
+}
+
+function getLocErrorMessage() {
+	var ret = {
+				"messages": [
+				             {
+			            	  "type": "text",
+			            	  "text": "Sorry, I could not recognize the location. Can you please try again?"
+				             },
+				            ]
+              };
+	return ret;
+}
+
+function getWeatherErrorMessage() {
+	var ret = {
+				"messages": [
+				             {
+			            	  "type": "text",
+			            	  "text": "Sorry, Unable to get weather information. Can you try again please?"
+				             },
+				            ]
+              };
+	return ret;
+}
 
 module.exports = router;

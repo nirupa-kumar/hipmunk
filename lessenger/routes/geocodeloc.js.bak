@@ -15,6 +15,8 @@ exports.getLocation = function(location, callback){
 			if (!err) {
 				var results = response.json.results && response.json.results;
 				if(results && results.length > 0) {
+					console.log(JSON.stringify(response.json.results));
+					console.log("Formatted address= "+response.json.results[0].formatted_address);
 					console.log("co-ordinates= "+ JSON.stringify(response.json.results[0].geometry.location));
 					
 					/* Almost all the time we get only one entry in the results array. So get the zeroeth entry */ 
